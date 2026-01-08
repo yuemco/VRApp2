@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supporting Children with Autism Through Physical Education - VR Application</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D5F7F;
+            --primary-light: #4A8CAE;
+            --accent: #E8894E;
+            --accent-light: #F5B895;
+            --warm-bg: #FFF9F5;
+            --warm-white: #FFFEF8;
+            --text-dark: #2C3E50;
+            --text-medium: #5A6C7D;
+            --success: #52B788;
+            --info: #3498DB;
+            --shadow-sm: 0 2px 8px rgba(45, 95, 127, 0.08);
+            --shadow-md: 0 4px 20px rgba(45, 95, 127, 0.12);
+            --shadow-lg: 0 8px 32px rgba(45, 95, 127, 0.16);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--warm-bg) 0%, var(--warm-white) 100%);
+            min-height: 100vh;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(45, 95, 127, 0.1);
+            animation: slideInDown 0.6s ease-out 0.3s both;
+        }
+
+        .lang-btn {
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-medium);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .lang-btn:hover {
+            background: var(--warm-bg);
+            color: var(--primary);
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(45, 95, 127, 0.2);
+        }
+
+        .lang-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(232,137,78,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            font-weight: 400;
+            max-width: 700px;
+            animation: slideInUp 0.8s ease-out 0.4s both;
+        }
+
+        .etwinning-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideInUp 0.8s ease-out 0.6s both;
+        }
+
+        .header-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .project-logo {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            flex-shrink: 0;
+        }
+
+        .project-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-partners {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-partners-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .partners-carousel-container {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        .header-partners-grid {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            animation: scroll-partners 30s linear infinite;
+            width: fit-content;
+        }
+
+        .header-partners-grid:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll-partners {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .header-partner-logo {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            width: 280px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-partner-logo:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+        }
+
+        .header-partner-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Main Content */
+        main {
+            padding: 80px 0;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        .intro-section {
+            background: white;
+            padding: 60px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 60px;
+            border: 1px solid rgba(45, 95, 127, 0.08);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease-out 0.8s both;
+        }
+
+        .intro-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(232, 137, 78, 0.25);
+        }
+
+        .intro-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.25rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .intro-section p {
+            font-size: 1.125rem;
+            color: var(--text-medium);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        /* Downloads Section */
+        .downloads-section {
+            margin-bottom: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(45, 95, 127, 0.2);
+        }
+
+        .section-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .download-card {
+            background: white;
+            padding: 48px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.6s ease-out 0.9s both;
+            margin-bottom: 40px;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .download-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-light);
+        }
+
+        .download-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.75rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .card-description {
+            color: var(--text-medium);
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .download-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(45, 95, 127, 0.2);
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 95, 127, 0.3);
+        }
+
+        .download-button svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Meta Quest Store Notice */
+        .meta-store-notice {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            padding: 32px 48px;
+            border-radius: 16px;
+            margin-top: 24px;
+            border: 2px solid rgba(33, 150, 243, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .meta-store-notice-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--info);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .meta-store-notice-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .meta-store-notice-text {
+            flex: 1;
+        }
+
+        .meta-store-notice-text h4 {
+            color: var(--info);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .meta-store-notice-text p {
+            color: var(--text-medium);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Installation Guide */
+        .guide-section {
+            background: linear-gradient(135deg, #FFF5E1 0%, #FFE4B5 100%);
+            padding: 48px;
+            border-radius: 20px;
+            margin-bottom: 60px;
+            border: 2px solid rgba(232, 137, 78, 0.15);
+            animation: scaleIn 0.6s ease-out 1.1s both;
+        }
+
+        .guide-section h2 {
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        .guide-steps {
+            display: grid;
+            gap: 16px;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content p {
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        /* Video Tutorials Section */
+        .video-tutorials-section {
+            background: white;
+            padding: 60px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 60px;
+            border: 1px solid rgba(45, 95, 127, 0.08);
+            animation: scaleIn 0.6s ease-out 1.3s both;
+        }
+
+        .video-tutorials-section h2 {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .video-intro {
+            text-align: center;
+            color: var(--text-medium);
+            font-size: 1.1rem;
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+        }
+
+        .video-card {
+            background: var(--warm-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-light);
+        }
+
+        .video-embed {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-embed iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-info {
+            padding: 24px;
+        }
+
+        .video-info h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .video-info p {
+            color: var(--text-medium);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .video-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        /* Manuals Section */
+        .manuals-section {
+            margin-bottom: 60px;
+        }
+
+        .manual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .manual-item {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(45, 95, 127, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.6s ease-out both;
+        }
+
+        .manual-item:nth-child(1) { animation-delay: 1.2s; }
+        .manual-item:nth-child(2) { animation-delay: 1.3s; }
+        .manual-item:nth-child(3) { animation-delay: 1.4s; }
+        .manual-item:nth-child(4) { animation-delay: 1.5s; }
+        .manual-item:nth-child(5) { animation-delay: 1.6s; }
+
+        .manual-item:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent);
+        }
+
+        .manual-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .manual-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .manual-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .manual-info p {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 48px 0;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 48px;
+            margin-bottom: 32px;
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-light);
+        }
+
+        .eu-disclaimer {
+            background: white;
+            padding: 48px 60px;
+            border-radius: 20px;
+            margin-top: 60px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(45, 95, 127, 0.08);
+        }
+
+        .eu-disclaimer img {
+            max-width: 200px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .eu-disclaimer-text {
+            flex: 1;
+        }
+
+        .eu-disclaimer-text p {
+            color: var(--text-medium);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            .header-title-wrapper {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .project-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .header-partners-grid {
+                gap: 24px;
+            }
+
+            .header-partner-logo {
+                width: 200px;
+                height: 130px;
+                padding: 20px;
+            }
+
+            .intro-section {
+                padding: 40px 24px;
+            }
+
+            .guide-section {
+                padding: 32px 24px;
+            }
+
+            .download-card {
+                padding: 32px 24px;
+            }
+
+            .manual-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-tutorials-section {
+                padding: 40px 24px;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .video-info h3 {
+                font-size: 1.25rem;
+            }
+
+            .eu-disclaimer {
+                flex-direction: column;
+                padding: 32px 24px;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .eu-disclaimer img {
+                max-width: 160px;
+            }
+
+            .meta-store-notice {
+                flex-direction: column;
+                text-align: center;
+                padding: 24px;
+            }
+
+            .language-switcher {
+                top: 16px;
+                right: 16px;
+                flex-wrap: wrap;
+                max-width: calc(100% - 32px);
+            }
+
+            .lang-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="mk">MK</button>
+        <button class="lang-btn" data-lang="lv">LV</button>
+        <button class="lang-btn" data-lang="lt">LT</button>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-title-wrapper">
+                    <div class="project-logo">
+                        <img src="4.jpeg" alt="Project Logo">
+                    </div>
+                    <h1 data-i18n="header.title">Supporting Children with Autism Through Physical Education</h1>
+                </div>
+                <p class="subtitle" data-i18n="header.subtitle">Innovative VR application designed to enhance physical education and motor skills development for children with autism spectrum disorder</p>
+                <span class="etwinning-badge">🇪🇺 <span data-i18n="header.badge">eTwinning Project</span></span>
+                
+                <!-- Partner Logos in Alphabetical Order -->
+                <div class="header-partners">
+                    <div class="header-partners-label" data-i18n="partners.title">Project Partners</div>
+                    <div class="partners-carousel-container">
+                        <div class="header-partners-grid">
+                            <!-- First Set -->
+                            <div class="header-partner-logo">
+                                <img src="1.jpeg" alt="Kauno Prano Daunio ugdymo centras">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="2.jpeg" alt="Çukurova Üniversitesi">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="7.jpeg" alt="Macedonian Scientific Society for Autism">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="3.jpeg" alt="Multi Act">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="6.jpeg" alt="Partner Organization">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="5.jpeg" alt="Valmieras Gaujas Krasta Vidusskola">
+                            </div>
+                            <!-- Second Set (duplicate for seamless loop) -->
+                            <div class="header-partner-logo">
+                                <img src="1.jpeg" alt="Kauno Prano Daunio ugdymo centras">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="2.jpeg" alt="Çukurova Üniversitesi">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="7.jpeg" alt="Macedonian Scientific Society for Autism">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="3.jpeg" alt="Multi Act">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="6.jpeg" alt="Partner Organization">
+                            </div>
+                            <div class="header-partner-logo">
+                                <img src="5.jpeg" alt="Valmieras Gaujas Krasta Vidusskola">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Introduction Section -->
+            <section class="intro-section">
+                <div class="intro-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                </div>
+                <h2 data-i18n="intro.title">About This Project</h2>
+                <p data-i18n="intro.paragraph1">This project aims to support children with autism spectrum disorder through an innovative virtual reality application focused on physical education and motor skills development. Our VR application provides an engaging, safe, and structured environment where children can practice and develop essential physical and social skills at their own pace.</p>
+                <p data-i18n="intro.paragraph2">The application has been developed as part of an eTwinning project, bringing together educators, researchers, and specialists to create evidence-based tools that enhance learning outcomes for children with autism. The VR experience is carefully designed to promote physical activity, coordination, social interaction, and confidence-building in a supportive virtual environment.</p>
+            </section>
+
+            <!-- VR Application Download Section -->
+            <section class="downloads-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 16v2c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-2c0-.55.45-1 1-1s1 .45 1 1v2h14v-2c0-.55.45-1 1-1s1 .45 1 1zm-9.71-3.71L8.7 9.7C8.31 9.31 7.68 9.31 7.29 9.7s-.39 1.02 0 1.41l3.29 3.29c.39.39 1.02.39 1.41 0l3.29-3.29c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0L12 11.59V4c0-.55-.45-1-1-1s-1 .45-1 1v7.59l-1.71-1.71z"/>
+                        </svg>
+                    </div>
+                    <h2 data-i18n="downloads.title">VR Application Download</h2>
+                </div>
+
+                <div class="download-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.41 8.41l-4.83-4.83c-.37-.37-.88-.58-1.41-.58H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9.83c0-.53-.21-1.04-.59-1.42zM7 7h7v2H7V7zm10 10H7v-2h10v2zm0-4H7v-2h10v2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 data-i18n="downloads.app.title">VR Application for Autism Support</h3>
+                            <span class="version-badge" data-i18n="downloads.app.version">Latest Version</span>
+                        </div>
+                    </div>
+                    <p class="card-description" data-i18n="downloads.app.description">Complete VR application for Meta Quest 3. Includes comprehensive physical education activities and motor skills exercises specifically designed for children with autism spectrum disorder. Features multi-language support and adjustable difficulty levels.</p>
+                    <a href="https://drive.google.com/file/d/1lUkCmR2VB0TYjnDZl-DLUHUhN8zE84H9/view?usp=sharing" class="download-button" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        <span data-i18n="downloads.button">Download APK</span>
+                    </a>
+
+                    <!-- Meta Quest Store Notice -->
+                    <div class="meta-store-notice">
+                        <div class="meta-store-notice-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <div class="meta-store-notice-text">
+                            <h4 data-i18n="metastore.title">Coming to Meta Quest Store</h4>
+                            <p data-i18n="metastore.description">We have submitted our application to Meta Quest Store. Once approved by Meta, you will be able to access and download the application directly from the official Meta Quest Store.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation Guide -->
+            <section class="guide-section">
+                <h2 data-i18n="guide.title">Installation Guide</h2>
+                <div class="guide-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <p><strong data-i18n="guide.step1.title">Download SideQuest:</strong> <span data-i18n="guide.step1.content">Install the SideQuest app on your computer from sidequestvr.com. This tool allows you to sideload applications to your Meta Quest headset.</span></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <p><strong data-i18n="guide.step2.title">Enable Developer Mode:</strong> <span data-i18n="guide.step2.content">In your Meta Quest app, go to Settings > Developer Mode and enable it. You may need to create a developer account with Meta.</span></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <p><strong data-i18n="guide.step3.title">Connect Your Headset:</strong> <span data-i18n="guide.step3.content">Connect your Meta Quest headset to your computer using a USB-C cable. Open SideQuest and allow the connection when prompted on your headset.</span></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <p><strong data-i18n="guide.step4.title">Install the APK:</strong> <span data-i18n="guide.step4.content">In SideQuest, click the 'Install APK file from folder' button and select the downloaded APK file. Wait for the installation to complete.</span></p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <p><strong data-i18n="guide.step5.title">Launch the Application:</strong> <span data-i18n="guide.step5.content">On your Meta Quest, go to App Library > Filter (Unknown Sources) to find and launch the installed VR application.</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Video Tutorials Section -->
+            <section class="video-tutorials-section">
+                <h2 data-i18n="videos.title">Video Tutorials</h2>
+                
+                <div class="videos-grid">
+                    <!-- Video 1 -->
+                    <div class="video-card">
+                        <div class="video-embed">
+                            <iframe src="https://www.youtube.com/embed/Lo7eW81ewuk" title="Video 1" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 data-i18n="videos.video1.title">Video 1</h3>
+                        </div>
+                    </div>
+
+                    <!-- Video 2 -->
+                    <div class="video-card">
+                        <div class="video-embed">
+                            <iframe src="https://www.youtube.com/embed/wchqVYU6FVw" title="Video 2" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 data-i18n="videos.video2.title">Video 2</h3>
+                        </div>
+                    </div>
+
+                    <!-- Video 3 -->
+                    <div class="video-card">
+                        <div class="video-embed">
+                            <iframe src="https://www.youtube.com/embed/rV0zlgSOZQM" title="Video 3" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 data-i18n="videos.video3.title">Video 3</h3>
+                        </div>
+                    </div>
+
+                    <!-- Video 4 -->
+                    <div class="video-card">
+                        <div class="video-embed">
+                            <iframe src="https://www.youtube.com/embed/N27szKX7pKc" title="Video 4" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 data-i18n="videos.video4.title">Video 4</h3>
+                        </div>
+                    </div>
+
+                    <!-- Video 5 -->
+                    <div class="video-card">
+                        <div class="video-embed">
+                            <iframe src="https://youtube.com/embed/w8wb_nJSOJY" title="Video 5" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h3 data-i18n="videos.video5.title">Video 5</h3>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
+            <!-- User Manuals Section -->
+            <section class="manuals-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+                        </svg>
+                    </div>
+                    <h2 data-i18n="manuals.title">User Manuals & Documentation</h2>
+                </div>
+
+                <div class="manual-grid">
+                    <a href="#" class="manual-item" download>
+                        <div class="manual-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <div class="manual-info">
+                            <h4 data-i18n="manuals.english.title">English Manual</h4>
+                            <p data-i18n="manuals.english.desc">Complete user guide in English</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="manual-item" download>
+                        <div class="manual-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <div class="manual-info">
+                            <h4 data-i18n="manuals.turkish.title">Turkish Manual</h4>
+                            <p data-i18n="manuals.turkish.desc">Türkçe kullanım kılavuzu</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="manual-item" download>
+                        <div class="manual-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <div class="manual-info">
+                            <h4 data-i18n="manuals.macedonian.title">Macedonian Manual</h4>
+                            <p data-i18n="manuals.macedonian.desc">Упатство на македонски јазик</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="manual-item" download>
+                        <div class="manual-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <div class="manual-info">
+                            <h4 data-i18n="manuals.latvian.title">Latvian Manual</h4>
+                            <p data-i18n="manuals.latvian.desc">Lietošanas rokasgrāmata latviešu valodā</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="manual-item" download>
+                        <div class="manual-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                            </svg>
+                        </div>
+                        <div class="manual-info">
+                            <h4 data-i18n="manuals.lithuanian.title">Lithuanian Manual</h4>
+                            <p data-i18n="manuals.lithuanian.desc">Naudojimo instrukcija lietuvių kalba</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 data-i18n="footer.about.title">About the Project</h3>
+                    <p data-i18n="footer.about.text">Supporting Children with Autism Through Physical Education is an eTwinning project dedicated to developing innovative VR tools for autism spectrum disorder support.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3 data-i18n="footer.resources.title">Resources</h3>
+                    <a href="#" data-i18n="footer.resources.documentation">Documentation</a>
+                    <a href="#" data-i18n="footer.resources.faqs">FAQs</a>
+                    <a href="#" data-i18n="footer.resources.support">Support</a>
+                    <a href="#" data-i18n="footer.resources.contact">Contact Us</a>
+                </div>
+
+                <div class="footer-section">
+                    <h3 data-i18n="footer.team.title">Project Team</h3>
+                    <p data-i18n="footer.team.text">Çukurova University<br>Mechatronics Engineering Department<br>Adana, Turkey</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3 data-i18n="footer.connect.title">Connect</h3>
+                    <a href="https://school-education.ec.europa.eu/en/etwinning/projects/supporting-children-autism-through-physical-education/twinspace" target="_blank" data-i18n="footer.connect.etwinning">eTwinning TwinSpace</a>
+                    <a href="/cdn-cgi/l/email-protection#fb9894958f9a988fbb9e839a968b979ed5989496" data-i18n="footer.connect.email">Contact Email</a>
+                </div>
+            </div>
+
+            <div class="eu-disclaimer">
+                <img src="8.jpeg" alt="Funded by the European Union">
+                <div class="eu-disclaimer-text">
+                    <p><strong data-i18n="footer.funding.title">eTwinning Project</strong></p>
+                    <p style="margin-top: 12px;" data-i18n="footer.funding.text">This project is part of the eTwinning program, a European initiative that promotes school collaboration and professional development through the use of information and communication technologies (ICT). The views and opinions expressed in this project are those of the authors and do not necessarily reflect those of the European Union or the National Support Services. Neither the European Union nor the National Support Services can be held responsible for them.</p>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p data-i18n="footer.copyright">© 2026 Supporting Children with Autism Through Physical Education. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Translations object
+        const translations = {
+            en: {
+                header: {
+                    title: "Supporting Children with Autism Through Physical Education",
+                    subtitle: "Innovative VR application designed to enhance physical education and motor skills development for children with autism spectrum disorder",
+                    badge: "eTwinning Project"
+                },
+                intro: {
+                    title: "About This Project",
+                    paragraph1: "This project aims to support children with autism spectrum disorder through an innovative virtual reality application focused on physical education and motor skills development. Our VR application provides an engaging, safe, and structured environment where children can practice and develop essential physical and social skills at their own pace.",
+                    paragraph2: "The application has been developed as part of an eTwinning project, bringing together educators, researchers, and specialists to create evidence-based tools that enhance learning outcomes for children with autism. The VR experience is carefully designed to promote physical activity, coordination, social interaction, and confidence-building in a supportive virtual environment."
+                },
+                downloads: {
+                    title: "VR Application Download",
+                    app: {
+                        title: "VR Application for Autism Support",
+                        version: "Latest Version",
+                        description: "Complete VR application for Meta Quest 3. Includes comprehensive physical education activities and motor skills exercises specifically designed for children with autism spectrum disorder. Features multi-language support and adjustable difficulty levels."
+                    },
+                    button: "Download APK"
+                },
+                metastore: {
+                    title: "Coming to Meta Quest Store",
+                    description: "We have submitted our application to Meta Quest Store. Once approved by Meta, you will be able to access and download the application directly from the official Meta Quest Store."
+                },
+                guide: {
+                    title: "Installation Guide",
+                    step1: {
+                        title: "Download SideQuest:",
+                        content: "Install the SideQuest app on your computer from sidequestvr.com. This tool allows you to sideload applications to your Meta Quest headset."
+                    },
+                    step2: {
+                        title: "Enable Developer Mode:",
+                        content: "In your Meta Quest app, go to Settings > Developer Mode and enable it. You may need to create a developer account with Meta."
+                    },
+                    step3: {
+                        title: "Connect Your Headset:",
+                        content: "Connect your Meta Quest headset to your computer using a USB-C cable. Open SideQuest and allow the connection when prompted on your headset."
+                    },
+                    step4: {
+                        title: "Install the APK:",
+                        content: "In SideQuest, click the 'Install APK file from folder' button and select the downloaded APK file. Wait for the installation to complete."
+                    },
+                    step5: {
+                        title: "Launch the Application:",
+                        content: "On your Meta Quest, go to App Library > Filter (Unknown Sources) to find and launch the installed VR application."
+                    }
+                },
+                manuals: {
+                    title: "User Manuals & Documentation",
+                    english: {
+                        title: "English Manual",
+                        desc: "Complete user guide in English"
+                    },
+                    turkish: {
+                        title: "Turkish Manual",
+                        desc: "Türkçe kullanım kılavuzu"
+                    },
+                    macedonian: {
+                        title: "Macedonian Manual",
+                        desc: "Упатство на македонски јазик"
+                    },
+                    latvian: {
+                        title: "Latvian Manual",
+                        desc: "Lietošanas rokasgrāmata latviešu valodā"
+                    },
+                    lithuanian: {
+                        title: "Lithuanian Manual",
+                        desc: "Naudojimo instrukcija lietuvių kalba"
+                    }
+                },
+                videos: {
+                    title: "Video Tutorials",
+                    video1: {
+                        title: "Video 1"
+                    },
+                    video2: {
+                        title: "Video 2"
+                    },
+                    video3: {
+                        title: "Video 3"
+                    },
+                    video4: {
+                        title: "Video 4"
+                    },
+                    video5: {
+                        title: "Video 5"
+                    }
+                },
+                partners: {
+                    title: "Project Partners"
+                },
+                footer: {
+                    about: {
+                        title: "About the Project",
+                        text: "Supporting Children with Autism Through Physical Education is an eTwinning project dedicated to developing innovative VR tools for autism spectrum disorder support."
+                    },
+                    resources: {
+                        title: "Resources",
+                        documentation: "Documentation",
+                        faqs: "FAQs",
+                        support: "Support",
+                        contact: "Contact Us"
+                    },
+                    team: {
+                        title: "Project Team",
+                        text: "Çukurova University<br>Computer Engineering Department<br>Adana, Türkiye"
+                    },
+                    connect: {
+                        title: "Connect",
+                        etwinning: "eTwinning TwinSpace",
+                        email: "Contact Email"
+                    },
+                    funding: {
+                        title: "eTwinning Project",
+                        text: "This project is part of the eTwinning program, a European initiative that promotes school collaboration and professional development through the use of information and communication technologies (ICT). The views and opinions expressed in this project are those of the authors and do not necessarily reflect those of the European Union or the National Support Services. Neither the European Union nor the National Support Services can be held responsible for them."
+                    },
+                    copyright: "© 2026 Supporting Children with Autism Through Physical Education. All rights reserved."
+                }
+            },
+            tr: {
+                header: {
+                    title: "Otizm Spektrum Bozukluğu Olan Çocukları Beden Eğitimi ile Desteklemek",
+                    subtitle: "Otizm spektrum bozukluğu olan çocuklar için beden eğitimi ve motor beceri gelişimini artırmak üzere tasarlanmış yenilikçi VR uygulaması",
+                    badge: "eTwinning Projesi"
+                },
+                intro: {
+                    title: "Proje Hakkında",
+                    paragraph1: "Bu proje, beden eğitimi ve motor beceri gelişimine odaklanan yenilikçi bir sanal gerçeklik uygulaması aracılığıyla otizm spektrum bozukluğu olan çocukları desteklemeyi amaçlamaktadır. VR uygulamamız, çocukların temel fiziksel ve sosyal becerileri kendi hızlarında uygulayabilecekleri ve geliştirebilecekleri ilgi çekici, güvenli ve yapılandırılmış bir ortam sunar.",
+                    paragraph2: "Uygulama, otizmli çocuklar için öğrenme sonuçlarını artıran kanıta dayalı araçlar oluşturmak için eğitimcileri, araştırmacıları ve uzmanları bir araya getiren bir eTwinning projesi kapsamında geliştirilmiştir. VR deneyimi, destekleyici bir sanal ortamda fiziksel aktiviteyi, koordinasyonu, sosyal etkileşimi ve güven oluşturmayı teşvik etmek için özenle tasarlanmıştır."
+                },
+                downloads: {
+                    title: "VR Uygulama İndirmesi",
+                    app: {
+                        title: "Otizm Desteği için VR Uygulaması",
+                        version: "Son Sürüm",
+                        description: "Meta Quest 3 için eksiksiz VR uygulaması. Otizm spektrum bozukluğu olan çocuklar için özel olarak tasarlanmış kapsamlı beden eğitimi aktiviteleri ve motor beceri egzersizleri içerir. Çok dilli destek ve ayarlanabilir zorluk seviyeleri sunar."
+                    },
+                    button: "APK İndir"
+                },
+                metastore: {
+                    title: "Meta Quest Store'a Geliyor",
+                    description: "Uygulamamızı Meta Quest Store'a gönderdik. Meta tarafından onaylandığında, uygulamaya doğrudan resmi Meta Quest Store'dan erişebilecek ve indirebileceksiniz."
+                },
+                guide: {
+                    title: "Kurulum Kılavuzu",
+                    step1: {
+                        title: "SideQuest'i İndirin:",
+                        content: "Bilgisayarınıza sidequestvr.com adresinden SideQuest uygulamasını yükleyin. Bu araç, Meta Quest başlığınıza uygulamaları yüklemenizi sağlar."
+                    },
+                    step2: {
+                        title: "Geliştirici Modunu Etkinleştirin:",
+                        content: "Meta Quest uygulamanızda Ayarlar > Geliştirici Modu'na gidin ve etkinleştirin. Meta ile bir geliştirici hesabı oluşturmanız gerekebilir."
+                    },
+                    step3: {
+                        title: "Başlığınızı Bağlayın:",
+                        content: "Meta Quest başlığınızı bir USB-C kablosu kullanarak bilgisayarınıza bağlayın. SideQuest'i açın ve başlığınızda istendiğinde bağlantıya izin verin."
+                    },
+                    step4: {
+                        title: "APK'yı Yükleyin:",
+                        content: "SideQuest'te 'Klasörden APK dosyası yükle' düğmesine tıklayın ve indirilen APK dosyasını seçin. Kurulumun tamamlanmasını bekleyin."
+                    },
+                    step5: {
+                        title: "Uygulamayı Başlatın:",
+                        content: "Meta Quest'inizde Uygulama Kitaplığı > Filtre (Bilinmeyen Kaynaklar) bölümüne gidin ve yüklü VR uygulamasını bulup başlatın."
+                    }
+                },
+                manuals: {
+                    title: "Kullanım Kılavuzları ve Dokümantasyon",
+                    english: {
+                        title: "İngilizce Kılavuz",
+                        desc: "İngilizce tam kullanım kılavuzu"
+                    },
+                    turkish: {
+                        title: "Türkçe Kılavuz",
+                        desc: "Türkçe kullanım kılavuzu"
+                    },
+                    macedonian: {
+                        title: "Makedonca Kılavuz",
+                        desc: "Упатство на македонски јазик"
+                    },
+                    latvian: {
+                        title: "Letonca Kılavuz",
+                        desc: "Lietošanas rokasgrāmata latviešu valodā"
+                    },
+                    lithuanian: {
+                        title: "Litvanca Kılavuz",
+                        desc: "Naudojimo instrukcija lietuvių kalba"
+                    }
+                },
+                videos: {
+                    title: "Video Eğitimleri",
+                    video1: {
+                        title: "Video 1"
+                    },
+                    video2: {
+                        title: "Video 2"
+                    },
+                    video3: {
+                        title: "Video 3"
+                    },
+                    video4: {
+                        title: "Video 4"
+                    },
+                    video5: {
+                        title: "Video 5"
+                    }
+                },
+                partners: {
+                    title: "Proje Ortakları"
+                },
+                footer: {
+                    about: {
+                        title: "Proje Hakkında",
+                        text: "Otizm Spektrum Bozukluğu Olan Çocukları Beden Eğitimi ile Desteklemek, otizm spektrum bozukluğu desteği için yenilikçi VR araçları geliştirmeye adanmış bir eTwinning projesidir."
+                    },
+                    resources: {
+                        title: "Kaynaklar",
+                        documentation: "Dokümantasyon",
+                        faqs: "Sık Sorulan Sorular",
+                        support: "Destek",
+                        contact: "Bize Ulaşın"
+                    },
+                    team: {
+                        title: "Proje Ekibi",
+                        text: "Çukurova Üniversitesi<br>Adana, Türkiye"
+                    },
+                    connect: {
+                        title: "Bağlantı",
+                        etwinning: "eTwinning TwinSpace",
+                        email: "İletişim E-postası"
+                    },
+                    funding: {
+                        title: "eTwinning Projesi",
+                        text: "Bu proje, bilgi ve iletişim teknolojilerinin (BİT) kullanımı yoluyla okul işbirliğini ve mesleki gelişimi teşvik eden bir Avrupa girişimi olan eTwinning programının bir parçasıdır. Bu projede ifade edilen görüş ve fikirler sadece yazarlara aittir ve Avrupa Birliği veya Ulusal Destek Hizmetlerinin görüşlerini yansıtmak zorunda değildir. Ne Avrupa Birliği ne de Ulusal Destek Hizmetleri bunlardan sorumlu tutulamaz."
+                    },
+                    copyright: "© 2026 Otizmli Çocukları Beden Eğitimi ile Desteklemek. Tüm hakları saklıdır."
+                }
+            },
+            mk: {
+                header: {
+                    title: "Поддршка на деца со аутизам преку физичко образование",
+                    subtitle: "Иновативна VR апликација дизајнирана за подобрување на физичкото образование и развојот на моторните вештини кај деца со аутизам",
+                    badge: "eTwinning проект"
+                },
+                intro: {
+                    title: "За проектот",
+                    paragraph1: "Овој проект има за цел да ги поддржи децата со аутизам преку иновативна апликација за виртуелна реалност фокусирана на физичкото образование и развојот на моторните вештини. Нашата VR апликација обезбедува привлечна, безбедна и структурирана средина каде децата можат да практикуваат и развиваат основни физички и социјални вештини според своето темпо.",
+                    paragraph2: "Апликацијата е развиена како дел од eTwinning проект, обединувајќи едукатори, истражувачи и специјалисти за да креираат алатки засновани на докази кои ги подобруваат резултатите од учењето кај деца со аутизам. VR искуството е внимателно дизајнирано за да промовира физичка активност, координација, социјална интеракција и градење на самодоверба во поддржувачка виртуелна средина."
+                },
+                downloads: {
+                    title: "Преземање на VR апликација",
+                    app: {
+                        title: "VR апликација за поддршка на аутизам",
+                        version: "Последна верзија",
+                        description: "Целосна VR апликација за Meta Quest 3. Вклучува сеопфатни активности за физичко образование и вежби за моторни вештини специфично дизајнирани за деца со аутизам. Вклучува мултијазична поддршка и прилагодливи нивоа на тежина."
+                    },
+                    button: "Преземи APK"
+                },
+                metastore: {
+                    title: "Доаѓа на Meta Quest Store",
+                    description: "Ја поднесовме нашата апликација до Meta Quest Store. Откако ќе биде одобрена од Meta, ќе можете да пристапите и преземете ја апликацијата директно од официјалната Meta Quest Store."
+                },
+                guide: {
+                    title: "Водич за инсталација",
+                    step1: {
+                        title: "Преземете SideQuest:",
+                        content: "Инсталирајте ја апликацијата SideQuest на вашиот компјутер од sidequestvr.com. Оваа алатка ви овозможува да вчитувате апликации на вашата Meta Quest слушалка."
+                    },
+                    step2: {
+                        title: "Овозможете режим за развивачи:",
+                        content: "Во вашата Meta Quest апликација, одете на Подесувања > Режим за развивачи и овозможете го. Можеби ќе треба да креирате сметка за развивач со Meta."
+                    },
+                    step3: {
+                        title: "Поврзете ја слушалката:",
+                        content: "Поврзете ја вашата Meta Quest слушалка на компјутерот користејќи USB-C кабел. Отворете го SideQuest и дозволете ја врската кога ќе биде побарано на слушалката."
+                    },
+                    step4: {
+                        title: "Инсталирајте APK:",
+                        content: "Во SideQuest, кликнете на копчето 'Инсталирај APK датотека од папка' и изберете ја преземената APK датотека. Почекајте да се заврши инсталацијата."
+                    },
+                    step5: {
+                        title: "Стартувајте ја апликацијата:",
+                        content: "На вашата Meta Quest, одете на Библиотека со апликации > Филтер (Непознати извори) за да ја најдете и стартувате инсталираната VR апликација."
+                    }
+                },
+                manuals: {
+                    title: "Кориснички прирачници и документација",
+                    english: {
+                        title: "Англиски прирачник",
+                        desc: "Целосен кориснички водич на англиски"
+                    },
+                    turkish: {
+                        title: "Турски прирачник",
+                        desc: "Türkçe kullanım kılavuzu"
+                    },
+                    macedonian: {
+                        title: "Македонски прирачник",
+                        desc: "Упатство на македонски јазик"
+                    },
+                    latvian: {
+                        title: "Латвиски прирачник",
+                        desc: "Lietošanas rokasgrāmata latviešu valodā"
+                    },
+                    lithuanian: {
+                        title: "Литвански прирачник",
+                        desc: "Naudojimo instrukcija lietuvių kalba"
+                    }
+                },
+                videos: {
+                    title: "Видео упатства",
+                    video1: {
+                        title: "Видео 1"
+                    },
+                    video2: {
+                        title: "Видео 2"
+                    },
+                    video3: {
+                        title: "Видео 3"
+                    },
+                    video4: {
+                        title: "Видео 4"
+                    },
+                    video5: {
+                        title: "Видео 5"
+                    }
+                },
+                partners: {
+                    title: "Проектни партнери"
+                },
+                footer: {
+                    about: {
+                        title: "За проектот",
+                        text: "Поддршка на деца со аутизам преку физичко образование е eTwinning проект посветен на развој на иновативни VR алатки за поддршка на аутизам."
+                    },
+                    resources: {
+                        title: "Ресурси",
+                        documentation: "Документација",
+                        faqs: "Често поставувани прашања",
+                        support: "Поддршка",
+                        contact: "Контактирајте не"
+                    },
+                    team: {
+                        title: "Проектен тим",
+                        text: "Универзитет Чукурова<br>Оддел за мехатроничко инженерство<br>Адана, Турција"
+                    },
+                    connect: {
+                        title: "Поврзете се",
+                        etwinning: "eTwinning TwinSpace",
+                        email: "Контакт е-пошта"
+                    },
+                    funding: {
+                        title: "eTwinning проект",
+                        text: "Овој проект е дел од програмата eTwinning, европска иницијатива која промовира соработка помеѓу училиштата и професионален развој преку употреба на информатички и комуникациски технологии (ИКТ). Изразените ставови и мислења се само на авторите и не мора да ги одразуваат ставовите на Европската Унија или Националните служби за поддршка. Ниту Европската Унија, ниту службите за доделување грантови не можат да се сметаат за одговорни за нив."
+                    },
+                    copyright: "© 2026 Поддршка на деца со аутизам преку физичко образование. Сите права задржани."
+                }
+            },
+            lv: {
+                header: {
+                    title: "Atbalsts bērniem ar autismu, izmantojot fizkultūru",
+                    subtitle: "Inovatīva VR lietojumprogramma, kas izstrādāta, lai uzlabotu fizisko izglītību un motorisko prasmju attīstību bērniem ar autisma spektra traucējumiem",
+                    badge: "eTwinning projekts"
+                },
+                intro: {
+                    title: "Par projektu",
+                    paragraph1: "Šī projekta mērķis ir atbalstīt bērnus ar autisma spektra traucējumiem, izmantojot inovatīvu virtuālās realitātes lietojumprogrammu, kas koncentrējas uz fizisko izglītību un motorisko prasmju attīstību. Mūsu VR lietojumprogramma nodrošina pievilcīgu, drošu un strukturētu vidi, kurā bērni var praktizēt un attīstīt būtiskas fiziskās un sociālās prasmes savā tempā.",
+                    paragraph2: "Lietojumprogramma ir izstrādāta kā daļa no eTwinning projekta, apvienojot pedagogus, pētniekus un speciālistus, lai izveidotu uz pierādījumiem balstītus rīkus, kas uzlabo mācīšanās rezultātus bērniem ar autismu. VR pieredze ir rūpīgi izstrādāta, lai veicinātu fizisko aktivitāti, koordināciju, sociālo mijiedarbību un pašpārliecinātības veidošanu atbalstošā virtuālajā vidē."
+                },
+                downloads: {
+                    title: "VR lietojumprogrammas lejupielāde",
+                    app: {
+                        title: "VR lietojumprogramma autisma atbalstam",
+                        version: "Jaunākā versija",
+                        description: "Pilnīga VR lietojumprogramma Meta Quest 3. Iekļauj visaptverošas fiziskās izglītības aktivitātes un motorisko prasmju vingrinājumus, kas īpaši izstrādāti bērniem ar autisma spektra traucējumiem. Ietver daudzvalodu atbalstu un pielāgojamus grūtības līmeņus."
+                    },
+                    button: "Lejupielādēt APK"
+                },
+                metastore: {
+                    title: "Drīzumā Meta Quest Store",
+                    description: "Mēs esam iesnieguši mūsu lietojumprogrammu Meta Quest Store. Kad Meta to apstiprināsiet, jūs varēsiet piekļūt un lejupielādēt lietojumprogrammu tieši no oficiālās Meta Quest Store."
+                },
+                guide: {
+                    title: "Instalēšanas rokasgrāmata",
+                    step1: {
+                        title: "Lejupielādējiet SideQuest:",
+                        content: "Instalējiet SideQuest lietojumprogrammu savā datorā no sidequestvr.com. Šis rīks ļauj jums ielādēt lietojumprogrammas savā Meta Quest austiņās."
+                    },
+                    step2: {
+                        title: "Iespējojiet izstrādātāja režīmu:",
+                        content: "Savā Meta Quest lietojumprogrammā dodieties uz Iestatījumi > Izstrādātāja režīms un iespējojiet to. Jums var būt nepieciešams izveidot izstrādātāja kontu ar Meta."
+                    },
+                    step3: {
+                        title: "Savienojiet austiņas:",
+                        content: "Savienojiet Meta Quest austiņas ar datoru, izmantojot USB-C kabeli. Atveriet SideQuest un atļaujiet savienojumu, kad to pieprasa austiņās."
+                    },
+                    step4: {
+                        title: "Instalējiet APK:",
+                        content: "Programmā SideQuest noklikšķiniet uz pogas 'Instalēt APK failu no mapes' un atlasiet lejupielādēto APK failu. Uzgaidiet instalācijas pabeigšanu."
+                    },
+                    step5: {
+                        title: "Palaidiet lietojumprogrammu:",
+                        content: "Savā Meta Quest dodieties uz Lietojumprogrammu bibliotēka > Filtrs (Nezināmi avoti), lai atrastu un palaistu instalēto VR lietojumprogrammu."
+                    }
+                },
+                manuals: {
+                    title: "Lietotāja rokasgrāmatas un dokumentācija",
+                    english: {
+                        title: "Angļu rokasgrāmata",
+                        desc: "Pilna lietotāja rokasgrāmata angļu valodā"
+                    },
+                    turkish: {
+                        title: "Turku rokasgrāmata",
+                        desc: "Türkçe kullanım kılavuzu"
+                    },
+                    macedonian: {
+                        title: "Maķedoniešu rokasgrāmata",
+                        desc: "Упатство на македонски јазик"
+                    },
+                    latvian: {
+                        title: "Latviešu rokasgrāmata",
+                        desc: "Lietošanas rokasgrāmata latviešu valodā"
+                    },
+                    lithuanian: {
+                        title: "Lietuviešu rokasgrāmata",
+                        desc: "Naudojimo instrukcija lietuvių kalba"
+                    }
+                },
+                videos: {
+                    title: "Video pamācības",
+                    video1: {
+                        title: "Video 1"
+                    },
+                    video2: {
+                        title: "Video 2"
+                    },
+                    video3: {
+                        title: "Video 3"
+                    },
+                    video4: {
+                        title: "Video 4"
+                    },
+                    video5: {
+                        title: "Video 5"
+                    }
+                },
+                partners: {
+                    title: "Projekta partneri"
+                },
+                footer: {
+                    about: {
+                        title: "Par projektu",
+                        text: "Atbalsts bērniem ar autismu, izmantojot fizkultūru, ir eTwinning projekts, kas veltīts inovatīvu VR rīku izstrādei autisma spektra traucējumu atbalstam."
+                    },
+                    resources: {
+                        title: "Resursi",
+                        documentation: "Dokumentācija",
+                        faqs: "BUJ",
+                        support: "Atbalsts",
+                        contact: "Sazinieties ar mums"
+                    },
+                    team: {
+                        title: "Projekta komanda",
+                        text: "Čukurovas Universitāte<br>Mehatronikas inženierzinātņu nodaļa<br>Adana, Turcija"
+                    },
+                    connect: {
+                        title: "Savienojieties",
+                        etwinning: "eTwinning TwinSpace",
+                        email: "Kontakta e-pasts"
+                    },
+                    funding: {
+                        title: "eTwinning projekts",
+                        text: "Šis projekts ir daļa no eTwinning programmas, Eiropas iniciatīvas, kas veicina skolu sadarbību un profesionālo attīstību, izmantojot informācijas un komunikācijas tehnoloģijas (IKT). Šajā projektā paustie uzskati un viedokļi ir tikai autoru uzskati un ne obligāti atspoguļo Eiropas Savienības vai Nacionālo atbalsta dienestu uzskatus. Ne Eiropas Savienība, ne grantu piešķiršanas iestādes nav atbildīgas par tiem."
+                    },
+                    copyright: "© 2026 Atbalsts bērniem ar autismu, izmantojot fizkultūru. Visas tiesības aizsargātas."
+                }
+            },
+            lt: {
+                header: {
+                    title: "Vaikų su autizmu palaikymas per kūno kultūrą",
+                    subtitle: "Novatoriška VR programa, skirta gerinti kūno kultūrą ir motorinių įgūdžių vystymąsi vaikams su autizmo spektro sutrikimu",
+                    badge: "eTwinning projektas"
+                },
+                intro: {
+                    title: "Apie projektą",
+                    paragraph1: "Šio projekto tikslas – remti vaikus su autizmo spektro sutrikimu naudojant novatorišką virtualios realybės programą, skirtą kūno kultūrai ir motorinių įgūdžių vystymuisi. Mūsų VR programa suteikia patrauklią, saugią ir struktūrizuotą aplinką, kurioje vaikai gali praktikuotis ir vystyti esminius fizinius ir socialinius įgūdžius savo tempu.",
+                    paragraph2: "Programa buvo sukurta kaip eTwinning projekto dalis, subūrus pedagogus, tyrėjus ir specialistus, kad būtų sukurti įrodymais pagrįsti įrankiai, gerinantys mokymosi rezultatus vaikams su autizmu. VR patirtis kruopščiai sukurta skatinti fizinį aktyvumą, koordinaciją, socialinę sąveiką ir pasitikėjimo savimi kūrimą palaikančioje virtualioje aplinkoje."
+                },
+                downloads: {
+                    title: "VR programos atsisiuntimas",
+                    app: {
+                        title: "VR programa autizmo palaikymui",
+                        version: "Naujausia versija",
+                        description: "Pilna VR programa Meta Quest 3. Apima išsamias kūno kultūros veiklas ir motorinius pratimus, specialiai skirtus vaikams su autizmo spektro sutrikimu. Turi daugiakalbę palaikymą ir reguliuojamus sunkumo lygius."
+                    },
+                    button: "Atsisiųsti APK"
+                },
+                metastore: {
+                    title: "Netrukus Meta Quest Store",
+                    description: "Pateikėme savo programą Meta Quest Store. Kai Meta patvirtins, galėsite pasiekti ir atsisiųsti programą tiesiogiai iš oficialios Meta Quest Store."
+                },
+                guide: {
+                    title: "Diegimo vadovas",
+                    step1: {
+                        title: "Atsisiųskite SideQuest:",
+                        content: "Įdiekite SideQuest programą į savo kompiuterį iš sidequestvr.com. Šis įrankis leidžia įkelti programas į jūsų Meta Quest ausines."
+                    },
+                    step2: {
+                        title: "Įjunkite kūrėjo režimą:",
+                        content: "Savo Meta Quest programoje eikite į Nustatymai > Kūrėjo režimas ir įjunkite jį. Gali tekti sukurti kūrėjo paskyrą su Meta."
+                    },
+                    step3: {
+                        title: "Prijunkite ausines:",
+                        content: "Prijunkite savo Meta Quest ausines prie kompiuterio naudodami USB-C kabelį. Atidarykite SideQuest ir leiskite prisijungti, kai bus paraginti ausinėse."
+                    },
+                    step4: {
+                        title: "Įdiekite APK:",
+                        content: "Programoje SideQuest spustelėkite mygtuką 'Įdiegti APK failą iš aplanko' ir pasirinkite atsisiųstą APK failą. Palaukite, kol diegimas bus baigtas."
+                    },
+                    step5: {
+                        title: "Paleiskite programą:",
+                        content: "Savo Meta Quest eikite į Programų biblioteka > Filtras (Nežinomi šaltiniai), kad rastumėte ir paleistumėte įdiegtą VR programą."
+                    }
+                },
+                manuals: {
+                    title: "Vartotojo vadovai ir dokumentacija",
+                    english: {
+                        title: "Anglų vadovas",
+                        desc: "Išsamus vartotojo vadovas anglų kalba"
+                    },
+                    turkish: {
+                        title: "Turkų vadovas",
+                        desc: "Türkçe kullanım kılavuzu"
+                    },
+                    macedonian: {
+                        title: "Makedonų vadovas",
+                        desc: "Упатство на македонски јазик"
+                    },
+                    latvian: {
+                        title: "Latvių vadovas",
+                        desc: "Lietošanas rokasgrāmata latviešu valodā"
+                    },
+                    lithuanian: {
+                        title: "Lietuvių vadovas",
+                        desc: "Naudojimo instrukcija lietuvių kalba"
+                    }
+                },
+                videos: {
+                    title: "Vaizdo pamokos",
+                    video1: {
+                        title: "Video 1"
+                    },
+                    video2: {
+                        title: "Video 2"
+                    },
+                    video3: {
+                        title: "Video 3"
+                    },
+                    video4: {
+                        title: "Video 4"
+                    },
+                    video5: {
+                        title: "Video 5"
+                    }
+                },
+                partners: {
+                    title: "Projekto partneriai"
+                },
+                footer: {
+                    about: {
+                        title: "Apie projektą",
+                        text: "Vaikų su autizmu palaikymas per kūno kultūrą yra eTwinning projektas, skirtas kurti novatoriškas VR priemones autizmo spektro sutrikimo paramai."
+                    },
+                    resources: {
+                        title: "Ištekliai",
+                        documentation: "Dokumentacija",
+                        faqs: "DUK",
+                        support: "Palaikymas",
+                        contact: "Susisiekite su mumis"
+                    },
+                    team: {
+                        title: "Projekto komanda",
+                        text: "Čukurovos universitetas<br>Mechatronikos inžinerijos skyrius<br>Adana, Turkija"
+                    },
+                    connect: {
+                        title: "Prisijunkite",
+                        etwinning: "eTwinning TwinSpace",
+                        email: "Kontaktinis el. paštas"
+                    },
+                    funding: {
+                        title: "eTwinning projektas",
+                        text: "Šis projektas yra eTwinning programos, Europos iniciatyvos, skatinančios mokyklų bendradarbiavimą ir profesinį tobulėjimą naudojant informacines ir komunikacines technologijas (IKT), dalis. Šiame projekte išreikšti požiūriai ir nuomonės yra tik autorių ir nebūtinai atspindi Europos Sąjungos ar Nacionalinių paramos tarnybų požiūrį. Nei Europos Sąjunga, nei dotacijų suteikiančios institucijos negali būti laikomi už juos atsakingais."
+                    },
+                    copyright: "© 2026 Vaikų su autizmu palaikymas per kūno kultūrą. Visos teisės saugomos."
+                }
+            }
+        };
+
+        // Language switching functionality
+        let currentLang = localStorage.getItem('selectedLanguage') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('selectedLanguage', lang);
+            
+            // Update all elements with data-i18n attributes
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const keys = key.split('.');
+                let translation = translations[lang];
+                
+                for (const k of keys) {
+                    translation = translation[k];
+                }
+                
+                if (translation) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translation;
+                    } else {
+                        element.innerHTML = translation;
+                    }
+                }
+            });
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang);
+            
+            // Add click handlers to language buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(btn.getAttribute('data-lang'));
+                });
+            });
+        });
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.fade-in, .intro-section, .download-card, .guide-section, .manuals-section, .video-tutorials-section, .partner-logos').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
